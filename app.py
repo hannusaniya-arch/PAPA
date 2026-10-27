@@ -33,7 +33,7 @@ from flask import Response, request
 def firebase_auth_proxy(path):
     r = requests.request(
         request.method,
-        f'https://pallaplay-276bb.firebaseapp.com/__/{path}',
+        f'https://vaultx-276bb.firebaseapp.com/__/{path}',
         params=request.args,
         data=request.get_data(),
         headers={k: v for k, v in request.headers if k.lower() not in ('host', 'content-length')},
