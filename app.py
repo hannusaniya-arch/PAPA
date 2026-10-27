@@ -26,7 +26,22 @@ log = logging.getLogger("pallapay")
 
 app  = Flask(__name__)
 PORT = int(os.environ.get("PORT", 8080))
+import requests
+from flask import Response, request
 
+@app.route('/__/<path:path>', methods=['GET', 'POST'])
+def firebase_auth_proxy(path):
+    r = requests.request(
+        request.method,
+        f'https://pallaplay-276bb.firebaseapp.com/__/{path}',
+        params=request.args,
+        data=request.get_data(),
+        headers={k: v for k, v in request.headers if k.lower() not in ('host', 'content-length')},
+        allow_redirects=False,
+    )
+    skip = {'content-encoding', 'content-length', 'transfer-encoding', 'connection'}
+    return Response(r.content, r.status_code,
+                    [(k, v) for k, v in r.headers.items() if k.lower() not in skip])
 VALID_STATUSES = {"pending", "approved", "rejected", "sent", "cancelled", "completed"}
 
 # ── Bot single-start guard ────────────────────────────
